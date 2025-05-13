@@ -1,13 +1,31 @@
-FROM node:18-slim
 
-WORKDIR /usr/src/app
+# Build stage
+FROM node:18-alpine AS build
 
-COPY package*.json ./
-RUN npm install
+# Set working directory
+WORKDIR /app
 
+# Copy package files and install dependencies
+COPY package.json package-lock.json* ./
+RUN npm ci
+
+# Copy all files
 COPY . .
 
-ENV PORT=8081
-EXPOSE 8081
+# Build the app
+RUN npm run build
 
-CMD [ "npm", "start" ]
+# Production stage
+FROM nginx:alpine AS production
+
+# Copy built assets from build stage
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Copy custom nginx config if needed
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
