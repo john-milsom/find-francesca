@@ -24,10 +24,8 @@ function InfoTable({ data }) {
 
 function ImportantInfo() {
   const tableData = [
-    ["Registration", "NX55 OUS"],
     ["MOT due", "26 November 2025"],
     ["Tax due", "1 September 2025"],
-    ["Insurance Policy Number", "P74562665 (Admiral)"],
     ["Insurance Renewal Date", "10 August 2025"],
   ];
 
