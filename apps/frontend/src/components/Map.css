@@ -1,0 +1,30 @@
+.Map {
+  text-align: center;
+}
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.map-container {
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.default-btn {
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.last-updated {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 15px;
+}
