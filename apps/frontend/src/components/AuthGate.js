@@ -4,7 +4,7 @@ import { auth } from "../firebase";
 
 const ALLOWED_USERS = [
   "john.milsom01@gmail.com",
-  "user2@example.com"
+  "liamdcunliffe@gmail.com"
 ];
 
 export default function AuthGate({ children }) {
