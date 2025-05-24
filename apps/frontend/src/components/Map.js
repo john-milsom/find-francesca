@@ -38,27 +38,32 @@ function Map() {
       });
   }, []);
 
-  const handleUpdateLocation = useCallback(() => {
+  // Shared function to update location and save to API
+  const updateLocationFromClicked = useCallback((location) => {
+    setMarkerPosition(location);
+
+    // Save to API
+    axios
+      .post(API_URL, location)
+      .then((response) => {
+        console.log("Location saved to API");
+        if (response.data && response.data.timestamp) {
+          setLastUpdated(response.data.timestamp);
+        }
+        setClickedPosition(null); // Clear clicked position after saving
+      })
+      .catch((error) => console.error("Error saving location:", error));
+  }, []);
+
+  const updateLocationFromCurrent = useCallback(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           console.log("Latitude:", latitude);
           console.log("Longitude:", longitude);
-          const newLocation = { lat: latitude, lng: longitude};
-          setMarkerPosition(newLocation);
-
-          // Save to API
-          axios
-            .post(API_URL, newLocation)
-            .then((response) => {
-              console.log("Location saved to API");
-              // Update the timestamp if returned from the API
-              if (response.data && response.data.timestamp) {
-                setLastUpdated(response.data.timestamp);
-              }
-            })
-            .catch((error) => console.error("Error saving location:", error));
+          const newLocation = { lat: latitude, lng: longitude };
+          updateLocationFromClicked(newLocation);
         },
         (error) => {
           console.error("Error getting location:", error);
@@ -67,14 +72,13 @@ function Map() {
     } else {
       console.error("Geolocation is not supported by this browser.");
     }
-  }, []);
+  }, [updateLocationFromClicked]);
 
   // Format the timestamp for display
   const formatTimestamp = (timestamp) => {
     if (!timestamp) return "Never";
-    
     try {
-      const date = new Date(lastUpdated?._seconds*1000+lastUpdated?._nanoseconds);
+      const date = new Date(lastUpdated?._seconds * 1000 + lastUpdated?._nanoseconds);
       return date.toISOString();
     } catch (error) {
       console.error("Error formatting timestamp:", error);
@@ -87,11 +91,19 @@ function Map() {
   return (
     <div className="map-container">
       <button
-        onClick={handleUpdateLocation}
+        onClick={updateLocationFromCurrent}
         className="default-btn"
       >
         Update with current location
       </button>
+      {clickedPosition && (
+        <button
+          onClick={() => updateLocationFromClicked(clickedPosition)}
+          className="default-btn"
+        >
+          Set location to clicked marker
+        </button>
+      )}
       <div style={{ display: "flex", justifyContent: "center" }}>
         <GoogleMap
           mapContainerStyle={containerStyle}
@@ -106,42 +118,19 @@ function Map() {
         >
           {markerPosition && (
             <Marker position={markerPosition}
-            icon={{
+              icon={{
                 url: "/car.png",
                 scaledSize: new window.google.maps.Size(40, 40),
-             }} /> 
+              }} />
           )}
           {clickedPosition && (
-            <Marker position={clickedPosition}/>
+            <Marker position={clickedPosition} />
           )}
         </GoogleMap>
       </div>
       <div className="last-updated">
-        Last updated at: { formatTimestamp(lastUpdated)}
+        Last updated at: {formatTimestamp(lastUpdated)}
       </div>
-      {clickedPosition && (
-        <button
-          onClick={() => {
-            // Use handleUpdateLocation logic, but set location to clicked marker
-            setMarkerPosition(clickedPosition);
-
-            // Save to API
-            axios
-              .post(API_URL, clickedPosition)
-              .then((response) => {
-                console.log("Clicked location saved to API (second button)");
-                if (response.data && response.data.timestamp) {
-                  setLastUpdated(response.data.timestamp);
-                }
-                setClickedPosition(null); // Clear clicked position after saving
-              })
-              .catch((error) => console.error("Error saving clicked location:", error));
-          }}
-          className="default-btn"
-        >
-          Set location to clicked marker
-        </button>
-      )}
     </div>
   );
 }
