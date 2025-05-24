@@ -18,8 +18,8 @@ functions.http('locationHandler', async (req, res) => {
 
   try {
     if (req.method === 'POST') {
-      const { lat, lng, postedAt } = req.body;
-      await collection.doc('latest').set({ lat, lng, postedAt: postedAt });
+      const { lat, lng } = req.body;
+      await collection.doc('latest').set({ lat, lng, timestamp: new Date() });
       res.status(200).send('Location saved');
     } else if (req.method === 'GET') {
       const doc = await collection.doc('latest').get();
