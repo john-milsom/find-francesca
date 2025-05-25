@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
 import axios from "axios";
 import './Map.css';
+import { useAuth } from "./AuthContext"; // <-- Import the Auth context
 
 const containerStyle = {
   width: "800px",
@@ -13,21 +14,28 @@ const defaultCenter = {
   lng: -0.0131,
 };
 
-const API_URL = "https://find-francesca-12182840987.europe-west2.run.app"; // ⬅️ Replace with your function URL
+const API_URL = "https://find-francesca-12182840987.europe-west2.run.app";
 
 function Map() {
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyBjS5PxGc8Ga1HqY0VwtXIQdrqxOEtiWxE", // ⬅️ Replace this
+    googleMapsApiKey: "AIzaSyBjS5PxGc8Ga1HqY0VwtXIQdrqxOEtiWxE",
   });
 
-  const [markerPosition, setMarkerPosition] = useState(null); // API marker
-  const [clickedPosition, setClickedPosition] = useState(null); // Clicked marker
+  const { idToken } = useAuth(); // <-- Get the token from context
+
+  const [markerPosition, setMarkerPosition] = useState(null);
+  const [clickedPosition, setClickedPosition] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
 
   // Load stored location on page load
   useEffect(() => {
+    if (!idToken) return; // Wait for token
     axios
-      .get(API_URL)
+      .get(API_URL, {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      })
       .then((response) => {
         const { lat, lng, timestamp } = response.data;
         setMarkerPosition({ lat, lng });
@@ -36,24 +44,31 @@ function Map() {
       .catch((error) => {
         console.error("Error fetching location:", error);
       });
-  }, []);
+  }, [idToken]);
 
   // Shared function to update location and save to API
-  const updateLocationFromClicked = useCallback((location) => {
-    setMarkerPosition(location);
+  const updateLocationFromClicked = useCallback(
+    (location) => {
+      setMarkerPosition(location);
 
-    // Save to API
-    axios
-      .post(API_URL, location)
-      .then((response) => {
-        console.log("Location saved to API");
-        if (response.data && response.data.timestamp) {
-          setLastUpdated(response.data.timestamp);
-        }
-        setClickedPosition(null); // Clear clicked position after saving
-      })
-      .catch((error) => console.error("Error saving location:", error));
-  }, []);
+      // Save to API
+      axios
+        .post(API_URL, location, {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        })
+        .then((response) => {
+          console.log("Location saved to API");
+          if (response.data && response.data.timestamp) {
+            setLastUpdated(response.data.timestamp);
+          }
+          setClickedPosition(null); // Clear clicked position after saving
+        })
+        .catch((error) => console.error("Error saving location:", error));
+    },
+    [idToken]
+  );
 
   const updateLocationFromCurrent = useCallback(() => {
     if (navigator.geolocation) {

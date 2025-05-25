@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Map from "./components/Map";
 import ImportantInfo from "./components/ImportantInfo";
-import AuthGate from "./components/AuthGate";
+import AuthGate, { AuthProvider } from "./components/AuthContext";
 import "./App.css";
 
 function App() {
@@ -14,26 +14,28 @@ function App() {
   };
 
   return (
-    <AuthGate>
-      <div style={{ textAlign: "center", fontFamily: "Arial, sans-serif" }}>
-        {/* Hamburger menu icon */}
-        <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
-          <div />
-          <div />
-          <div />
-        </div>
-        {/* Side menu */}
-        {menuOpen && (
-          <div className="side-menu">
-            <button onClick={() => handleNav("map")}>Map</button>
-            <button onClick={() => handleNav("info")}>Information</button>
+    <AuthProvider>
+      <AuthGate>
+        <div style={{ textAlign: "center", fontFamily: "Arial, sans-serif" }}>
+          {/* Hamburger menu icon */}
+          <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+            <div />
+            <div />
+            <div />
           </div>
-        )}
-        <h1>Where is Francesca?</h1>
-        {screen === "map" && <Map />}
-        {screen === "info" && <ImportantInfo />}
-      </div>
-    </AuthGate>
+          {/* Side menu */}
+          {menuOpen && (
+            <div className="side-menu">
+              <button onClick={() => handleNav("map")}>Map</button>
+              <button onClick={() => handleNav("info")}>Information</button>
+            </div>
+          )}
+          <h1>Where is Francesca?</h1>
+          {screen === "map" && <Map />}
+          {screen === "info" && <ImportantInfo />}
+        </div>
+      </AuthGate>
+    </AuthProvider>
   );
 }
 
