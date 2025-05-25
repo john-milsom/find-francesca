@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import Map from "./components/Map";
 import ImportantInfo from "./components/ImportantInfo";
-import AuthGate, { AuthProvider } from "./components/AuthContext";
+import { AuthProvider } from "./components/AuthContext";
+import AuthGate from "./components/AuthGate";
 import "./App.css";
 
 function App() {

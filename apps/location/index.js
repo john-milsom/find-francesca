@@ -32,7 +32,7 @@ functions.http('locationHandler', async (req, res) => {
   // Add CORS headers
   res.set('Access-Control-Allow-Origin', '*'); // or specify your domain instead of '*'
   res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
 
   // Handle preflight OPTIONS request
   if (req.method === 'OPTIONS') {
@@ -41,11 +41,11 @@ functions.http('locationHandler', async (req, res) => {
   }
 
   // Require authentication for GET and POST
-  const user = await verifyFirebaseToken(req);
-  if (!user) {
-    res.status(401).send('Unauthorized');
-    return;
-  }
+  // const user = await verifyFirebaseToken(req);
+  // if (!user) {
+  //   res.status(401).send('Unauthorized');
+  //   return;
+  // }
 
   try {
     if (req.method === 'POST') {
