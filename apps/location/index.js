@@ -32,7 +32,7 @@ functions.http('locationHandler', async (req, res) => {
   // Add CORS headers
   res.set('Access-Control-Allow-Origin', '*'); // or specify your domain instead of '*'
   res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   // Handle preflight OPTIONS request
   if (req.method === 'OPTIONS') {
