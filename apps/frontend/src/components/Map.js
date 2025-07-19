@@ -14,7 +14,8 @@ const defaultCenter = {
   lng: -0.0131,
 };
 
-const API_URL = "https://find-francesca-12182840987.europe-west2.run.app";
+const BASE_URL = "https://find-francesca-12182840987.europe-west2.run.app";
+const LOCATION_URL = `${BASE_URL}/locationHandler`;
 
 function Map() {
   const { isLoaded } = useJsApiLoader({
@@ -31,7 +32,7 @@ function Map() {
   useEffect(() => {
     if (!idToken) return; // Wait for token
     axios
-      .get(API_URL, {
+      .get(LOCATION_URL, {
         headers: {
           Authorization: `Bearer ${idToken}`,
         },
@@ -53,7 +54,7 @@ function Map() {
 
       // Save to API
       axios
-        .post(API_URL, location, {
+        .post(LOCATION_URL, location, {
           headers: {
             Authorization: `Bearer ${idToken}`,
           },

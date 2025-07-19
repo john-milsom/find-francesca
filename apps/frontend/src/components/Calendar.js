@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "./AuthContext";
 
-const CALENDAR_API_URL = "https://find-francesca-12182840987.europe-west2.run.app/calendarHandler";
+const BASE_URL = "https://find-francesca-12182840987.europe-west2.run.app";
+const CALENDAR_URL = `${BASE_URL}/calendarHandler`;
 
 function Calendar() {
   const { idToken } = useAuth();
@@ -13,7 +14,7 @@ function Calendar() {
   useEffect(() => {
     if (!idToken) return;
     axios
-      .get(CALENDAR_API_URL, {
+      .get(CALENDAR_URL, {
         headers: { Authorization: `Bearer ${idToken}` }
       })
       .then(res => setEntries(res.data))
@@ -28,12 +29,12 @@ function Calendar() {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post(CALENDAR_API_URL, form, {
+      await axios.post(CALENDAR_URL, form, {
         headers: { Authorization: `Bearer ${idToken}` }
       });
       setForm({ from: "", to: "", name: "" });
       // Refresh entries
-      const res = await axios.get(CALENDAR_API_URL, {
+      const res = await axios.get(CALENDAR_URL, {
         headers: { Authorization: `Bearer ${idToken}` }
       });
       setEntries(res.data);
@@ -70,7 +71,7 @@ function Calendar() {
           </tr>
         </thead>
         <tbody>
-          {entries.map(entry => (
+          {(Array.isArray(entries) ? entries : []).map(entry => (
             <tr key={entry.id}>
               <td style={{ borderBottom: "1px solid #eee" }}>{entry.from}</td>
               <td style={{ borderBottom: "1px solid #eee" }}>{entry.to}</td>
