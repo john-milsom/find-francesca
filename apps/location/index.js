@@ -16,31 +16,6 @@ const ALLOWED_USERS = [
   "liamdcunliffe@gmail.com"
 ];
 
-functions.http('mainHandler', async (req, res) => {
-  console.log("Entered mainHandler:", req.method, req.route, req.path, req.body);
-
-  // Add CORS headers
-  res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-  const user = await verifyFirebaseToken(req);
-  if (!user) {
-    console.log("locationHandler: Unauthorized");
-    res.status(401).send('Unauthorized');
-    return;
-  }
-
-  if (req.path === '/location') {
-    await locationHandler(req, res);
-  } else if (req.path === '/calendar') {
-    await calendarHandler(req, res);
-  } else {
-    console.log("mainHandler: Unknown route", req.path);
-    res.status(404).send('Not Found');
-  }
-});
-
 async function verifyFirebaseToken(req) {
   const authHeader = req.headers.authorization || '';
   const match = authHeader.match(/^Bearer (.+)$/);
@@ -123,3 +98,27 @@ async function calendarHandler(req, res) {
 }
 
 
+functions.http('mainHandler', async (req, res) => {
+  console.log("Entered mainHandler:", req.method, req.route, req.path, req.body);
+
+  // Add CORS headers
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  const user = await verifyFirebaseToken(req);
+  if (!user) {
+    console.log("locationHandler: Unauthorized");
+    res.status(401).send('Unauthorized');
+    return;
+  }
+
+  if (req.path === '/location') {
+    await locationHandler(req, res);
+  } else if (req.path === '/calendar') {
+    await calendarHandler(req, res);
+  } else {
+    console.log("mainHandler: Unknown route", req.path);
+    res.status(404).send('Not Found');
+  }
+});
