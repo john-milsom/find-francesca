@@ -10,4 +10,4 @@ COPY . .
 ENV PORT=8080
 EXPOSE 8080
 
-CMD [ "npx", "@google-cloud/functions-framework", "--target=locationHandler" ]
+CMD [ "npx", "@google-cloud/functions-framework", "--target=mainHandler" ]
