@@ -30,13 +30,14 @@ async function verifyFirebaseToken(req) {
 }
 
 functions.http('locationHandler', async (req, res) => {
+  console.log("Entered locationHandler:", req.method);
   // Add CORS headers
   res.set('Access-Control-Allow-Origin', '*'); // or specify your domain instead of '*'
   res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  // Handle preflight OPTIONS request
   if (req.method === 'OPTIONS') {
+    console.log("locationHandler: OPTIONS request");
     res.status(204).send('');
     return;
   }
@@ -50,10 +51,12 @@ functions.http('locationHandler', async (req, res) => {
 
   try {
     if (req.method === 'POST') {
+      console.log("locationHandler: POST request");
       const { lat, lng } = req.body;
       await collection.doc('latest').set({ lat, lng, timestamp: new Date() });
       res.status(200).send('Location saved');
     } else if (req.method === 'GET') {
+      console.log("locationHandler: GET request");
       const doc = await collection.doc('latest').get();
       if (!doc.exists) {
         res.status(404).send('No location found');
@@ -61,49 +64,57 @@ functions.http('locationHandler', async (req, res) => {
         res.status(200).json(doc.data());
       }
     } else {
+      console.log("locationHandler: Method Not Allowed");
       res.status(405).send('Method Not Allowed');
     }
   } catch (error) {
-    console.error(error);
+    console.error("locationHandler: Error", error);
     res.status(500).send('Internal Server Error');
   }
 });
 
 // Calendar GET: fetch all entries
 functions.http('calendarHandler', async (req, res) => {
+  console.log("Entered calendarHandler:", req.method);
   res.set('Access-Control-Allow-Origin', '*');
   res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
+    console.log("calendarHandler: OPTIONS request");
     res.status(204).send('');
     return;
   }
 
   const user = await verifyFirebaseToken(req);
   if (!user) {
+    console.log("calendarHandler: Unauthorized");
     res.status(401).send('Unauthorized');
     return;
   }
 
   try {
     if (req.method === 'GET') {
+      console.log("calendarHandler: GET request");
       const snapshot = await calendarCollection.orderBy('from').get();
       const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       res.status(200).json(items);
     } else if (req.method === 'POST') {
+      console.log("calendarHandler: POST request");
       const { from, to, name } = req.body;
       if (!from || !to || !name) {
+        console.log("calendarHandler: Missing fields");
         res.status(400).send('Missing fields');
         return;
       }
       await calendarCollection.add({ from, to, name });
       res.status(200).send('Calendar entry added');
     } else {
+      console.log("calendarHandler: Method Not Allowed");
       res.status(405).send('Method Not Allowed');
     }
   } catch (error) {
-    console.error(error);
+    console.error("calendarHandler: Error", error);
     res.status(500).send('Internal Server Error');
   }
 });
