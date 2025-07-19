@@ -3,7 +3,7 @@ import axios from "axios";
 import { useAuth } from "./AuthContext";
 
 const BASE_URL = "https://find-francesca-12182840987.europe-west2.run.app";
-const CALENDAR_URL = `${BASE_URL}/calendarHandler`;
+const CALENDAR_URL = `${BASE_URL}/calendar`;
 
 function Calendar() {
   const { idToken } = useAuth();

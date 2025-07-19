@@ -16,6 +16,31 @@ const ALLOWED_USERS = [
   "liamdcunliffe@gmail.com"
 ];
 
+functions.http('mainHandler', async (req, res) => {
+  console.log("Entered mainHandler:", req.method, req.route, req.path, req.body);
+
+  // Add CORS headers
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  const user = await verifyFirebaseToken(req);
+  if (!user) {
+    console.log("locationHandler: Unauthorized");
+    res.status(401).send('Unauthorized');
+    return;
+  }
+
+  if (req.path === '/location') {
+    await locationHandler(req, res);
+  } else if (req.path === '/calendar') {
+    await calendarHandler(req, res);
+  } else {
+    console.log("mainHandler: Unknown route", req.path);
+    res.status(404).send('Not Found');
+  }
+});
+
 async function verifyFirebaseToken(req) {
   const authHeader = req.headers.authorization || '';
   const match = authHeader.match(/^Bearer (.+)$/);
@@ -29,25 +54,14 @@ async function verifyFirebaseToken(req) {
   }
 }
 
-functions.http('locationHandler', async (req, res) => {
+async function locationHandler(req, res) {
   console.log("Entered locationHandler:", req.method, req.route, req.path, req.body);
-  // Add CORS headers
-  res.set('Access-Control-Allow-Origin', '*'); // or specify your domain instead of '*'
-  res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     console.log("locationHandler: OPTIONS request");
     res.status(204).send('');
     return;
   }
-
-  // Require authentication for GET and POST
-  // const user = await verifyFirebaseToken(req);
-  // if (!user) {
-  //   res.status(401).send('Unauthorized');
-  //   return;
-  // }
 
   try {
     if (req.method === 'POST') {
@@ -71,25 +85,14 @@ functions.http('locationHandler', async (req, res) => {
     console.error("locationHandler: Error", error);
     res.status(500).send('Internal Server Error');
   }
-});
+}
 
-// Calendar GET: fetch all entries
-functions.http('calendarHandler', async (req, res) => {
+async function calendarHandler(req, res) {
   console.log("Entered calendarHandler:", req.method);
-  res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     console.log("calendarHandler: OPTIONS request");
     res.status(204).send('');
-    return;
-  }
-
-  const user = await verifyFirebaseToken(req);
-  if (!user) {
-    console.log("calendarHandler: Unauthorized");
-    res.status(401).send('Unauthorized');
     return;
   }
 
@@ -117,4 +120,6 @@ functions.http('calendarHandler', async (req, res) => {
     console.error("calendarHandler: Error", error);
     res.status(500).send('Internal Server Error');
   }
-});
+}
+
+

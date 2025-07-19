@@ -15,7 +15,7 @@ const defaultCenter = {
 };
 
 const BASE_URL = "https://find-francesca-12182840987.europe-west2.run.app";
-const LOCATION_URL = `${BASE_URL}/locationHandler`;
+const LOCATION_URL = `${BASE_URL}/location`;
 
 function Map() {
   const { isLoaded } = useJsApiLoader({
