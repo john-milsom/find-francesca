@@ -30,7 +30,7 @@ async function verifyFirebaseToken(req) {
 }
 
 functions.http('locationHandler', async (req, res) => {
-  console.log("Entered locationHandler:", req.method);
+  console.log("Entered locationHandler:", req.method, req.route, req.path, req.body);
   // Add CORS headers
   res.set('Access-Control-Allow-Origin', '*'); // or specify your domain instead of '*'
   res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
