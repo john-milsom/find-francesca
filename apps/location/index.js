@@ -8,6 +8,7 @@ if (!admin.apps.length) {
   admin.initializeApp();
 }
 const collection = firestore.collection('locations');
+const calendarCollection = firestore.collection('calendar');
 
 // Allowed users (move to env or secret manager for production)
 const ALLOWED_USERS = [
@@ -59,6 +60,45 @@ functions.http('locationHandler', async (req, res) => {
       } else {
         res.status(200).json(doc.data());
       }
+    } else {
+      res.status(405).send('Method Not Allowed');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// Calendar GET: fetch all entries
+functions.http('calendarHandler', async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  if (req.method === 'OPTIONS') {
+    res.status(204).send('');
+    return;
+  }
+
+  const user = await verifyFirebaseToken(req);
+  if (!user) {
+    res.status(401).send('Unauthorized');
+    return;
+  }
+
+  try {
+    if (req.method === 'GET') {
+      const snapshot = await calendarCollection.orderBy('from').get();
+      const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      res.status(200).json(items);
+    } else if (req.method === 'POST') {
+      const { from, to, name } = req.body;
+      if (!from || !to || !name) {
+        res.status(400).send('Missing fields');
+        return;
+      }
+      await calendarCollection.add({ from, to, name });
+      res.status(200).send('Calendar entry added');
     } else {
       res.status(405).send('Method Not Allowed');
     }
