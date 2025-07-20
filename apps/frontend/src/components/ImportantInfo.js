@@ -28,11 +28,12 @@ function ImportantInfo() {
     ["MOT due", "26 November 2025"],
     ["Tax due", "1 September 2025"],
     ["Insurance Renewal Date", "10 August 2025"],
+    ["Parking Renewal Date", "09 August 2025"],
   ];
 
   return (
     <div className="info-container">
-      <h2 className="info-title">Important Information</h2>
+      {/* <h2 className="info-title">Important Information</h2> */}
       <InfoTable data={tableData} />
     </div>
   );

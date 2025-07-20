@@ -44,10 +44,10 @@ export default function AuthGate({ children }) {
 
   return (
     <div>
-      <div style={{ textAlign: "right", margin: 10 }}>
+      {/* <div style={{ textAlign: "right", margin: 10 }}>
         Signed in as {user.email}{" "}
         <button onClick={() => signOut(auth)}>Sign Out</button>
-      </div>
+      </div> */}
       {children}
     </div>
   );
