@@ -75,6 +75,16 @@ async function calendarHandler(req, res) {
       }
       await calendarCollection.add({ from, to, name });
       res.status(200).send('Calendar entry added');
+    } else if (req.method === 'DELETE') {
+      console.log("calendarHandler: DELETE request");
+      const { id } = req.body;
+      if (!id) {
+        console.log("calendarHandler: Missing id for delete");
+        res.status(400).send('Missing id');
+        return;
+      }
+      await calendarCollection.doc(id).delete();
+      res.status(200).send('Calendar entry deleted');
     } else {
       console.log("calendarHandler: Method Not Allowed");
       res.status(405).send('Method Not Allowed');
@@ -91,7 +101,7 @@ functions.http('mainHandler', async (req, res) => {
 
   // Add CORS headers
   res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.set('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   // Handle preflight OPTIONS request

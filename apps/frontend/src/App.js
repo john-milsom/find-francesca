@@ -33,7 +33,6 @@ function App() {
               <button onClick={() => handleNav("calendar")}>Calendar</button>
             </div>
           )}
-          <h1>Where is Francesca?</h1>
           {screen === "map" && <Map />}
           {screen === "info" && <ImportantInfo />}
           {screen === "calendar" && <Calendar />}

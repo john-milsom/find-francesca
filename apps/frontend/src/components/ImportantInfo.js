@@ -1,4 +1,5 @@
 import React from "react";
+import "./ImportantInfo.css";
 
 // Reusable Table component
 function InfoTable({ data }) {
@@ -30,8 +31,8 @@ function ImportantInfo() {
   ];
 
   return (
-    <div style={{ marginTop: 40 }}>
-      <h3>Information</h3>
+    <div className="info-container">
+      <h2 className="info-title">Important Information</h2>
       <InfoTable data={tableData} />
     </div>
   );
