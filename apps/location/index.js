@@ -22,6 +22,7 @@ async function verifyFirebaseToken(req) {
   if (!match) return null;
   try {
     const decodedToken = await admin.auth().verifyIdToken(match[1]);
+    console.log("Decoded token:", decodedToken.email);
     if (!ALLOWED_USERS.includes(decodedToken.email)) return null;
     return decodedToken;
   } catch {
@@ -103,7 +104,7 @@ functions.http('mainHandler', async (req, res) => {
   //Authenticate
   const user = await verifyFirebaseToken(req);
   if (!user) {
-    console.log("locationHandler: Unauthorized");
+    console.log("Unauthorized access");
     res.status(401).send('Unauthorized');
     return;
   }
