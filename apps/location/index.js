@@ -31,13 +31,6 @@ async function verifyFirebaseToken(req) {
 
 async function locationHandler(req, res) {
   console.log("Entered locationHandler:", req.method, req.route, req.path, req.body);
-
-  if (req.method === 'OPTIONS') {
-    console.log("locationHandler: OPTIONS request");
-    res.status(204).send('');
-    return;
-  }
-
   try {
     if (req.method === 'POST') {
       console.log("locationHandler: POST request");
@@ -64,12 +57,6 @@ async function locationHandler(req, res) {
 
 async function calendarHandler(req, res) {
   console.log("Entered calendarHandler:", req.method);
-
-  if (req.method === 'OPTIONS') {
-    console.log("calendarHandler: OPTIONS request");
-    res.status(204).send('');
-    return;
-  }
 
   try {
     if (req.method === 'GET') {
@@ -106,6 +93,14 @@ functions.http('mainHandler', async (req, res) => {
   res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    console.log("findFrancesca: OPTIONS request");
+    res.status(204).send('');
+    return;
+  }
+
+  //Authenticate
   const user = await verifyFirebaseToken(req);
   if (!user) {
     console.log("locationHandler: Unauthorized");
@@ -113,6 +108,7 @@ functions.http('mainHandler', async (req, res) => {
     return;
   }
 
+  // Route requests to the appropriate method
   if (req.path === '/location') {
     await locationHandler(req, res);
   } else if (req.path === '/calendar') {
