@@ -102,12 +102,12 @@ functions.http('mainHandler', async (req, res) => {
   }
 
   //Authenticate
-  const user = await verifyFirebaseToken(req);
-  if (!user) {
-    console.log("Unauthorized access");
-    res.status(401).send('Unauthorized');
-    return;
-  }
+  // const user = await verifyFirebaseToken(req);
+  // if (!user) {
+  //   console.log("Unauthorized access");
+  //   res.status(401).send('Unauthorized');
+  //   return;
+  // }
 
   // Route requests to the appropriate method
   if (req.path === '/location') {
